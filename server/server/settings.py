@@ -15,17 +15,18 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+import os
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nu6dz#&#y(y$4j3)^o%(izs(a=fu!1(ehxyv(mukl$r#uefpcj'
-
+SECRET_KEY = os.environ.get('SECRET_KEY','asdasdasd')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+
 
 
 # Application definition
@@ -37,7 +38,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+     # 3rd party module
+    'corsheaders',
+    'rest_framework',
+
+    # project apps
+    'authentication',
+    'clinic',
+
 ]
+REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'authentication.base.SafeJWTAuthentication',
+    # ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  # make all endpoints private
+    )
+
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +69,17 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'server.urls'
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGIN = ['*']
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
 TEMPLATES = [
     {
@@ -79,6 +109,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get("DB_PORT", "5432")
+#     }
+# }
+
 
 
 # Password validation
@@ -121,3 +162,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL='authentication.User'

@@ -25,4 +25,13 @@ class PrescriptionItem(ModelBase):
     prescription = models.ForeignKey(Prescription,null=False, on_delete=models.CASCADE)
     medicine = models.ForeignKey(Medicine,null=False, on_delete=models.CASCADE)
     quantity = models.IntegerField()
+    description = models.TextField(null=True, blank=True)
 
+
+class Diagnostician(models.Model):
+    patient = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True, related_name='patient_diagnostician', related_query_name='diagnostician')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    symptom = models.TextField(null=True, blank=True)
+    conclusion = models.TextField(null=True, blank=True)

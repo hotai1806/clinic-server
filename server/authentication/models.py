@@ -22,6 +22,16 @@ class Role(ModelBase):
 
 
 class User(AbstractUser):
+    # DOCTOR = 1
+    # NURSE = 2
+    # SURGEN =3
+
+    # ROLE_CHOICES = (
+    #       (DOCTOR, 'Doctor'),
+    #       (NURSE, 'Nurse'),
+    #       (SURGEN, 'Surgen'),
+    #   )
+
     avatar = models.ImageField(null=True, upload_to='users/%Y/%m')
     email = models.EmailField(null=False)
 

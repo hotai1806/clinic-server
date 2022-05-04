@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from clinic.models import Appointment, Medicine, \
-    Prescription, PrescriptionItem, ScheduleTask,Diagnostician
+    Prescription, PrescriptionItem, ScheduleTask, Diagnostician
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -24,13 +24,12 @@ class DiagnosticianSerializer(serializers.ModelSerializer):
     }
     '''
     patient_id = serializers.CharField(max_length=255)
-    treatment_id = serializers.CharField(max_length=255)
 
     class Meta:
         model = Diagnostician
         fields = ["id", 'patient_id', "patient", "symptom",
-                  'treatment_id', "treatment", 'created_at', 'updated_at']
-        read_only = ['id']
+                  "conclusion", ]
+        read_only = ["id", "patient"]
         depth = 1
 
 
@@ -39,14 +38,53 @@ class PrescriptionItemSerializer(serializers.ModelSerializer):
     Create Diagnosise include data{
     }
     '''
-    payment_id = serializers.CharField(max_length=255)
-    drug_id = serializers.CharField(max_length=255)
-    diagnostician_id = serializers.CharField(max_length=255)
-    diagnostician = DiagnosticianSerializer(read_only=True)
+    prescription_id = serializers.CharField(max_length=255)
+    medicine_id = serializers.CharField(max_length=255)
 
     class Meta:
         model = PrescriptionItem
-        fields = ["id", "quanlity", "payment_id",
-                  "drug_id", 'diagnostician', 'diagnostician_id']
+        fields = ["id", "quantity",
+                  "medicine_id", 'prescription', 'prescription_id']
+        read_only = ['id']
+        depth = 1
+
+
+class ScheduleTaskSerializer(serializers.ModelSerializer):
+    '''
+    Create ScheduleTask include data{
+    }
+    '''
+    user_id = serializers.CharField(max_length=255)
+
+    class Meta:
+        model = ScheduleTask
+        fields = ["id", "user_id", "user", "appointment_date"]
+        read_only = ['id', "user"]
+        depth = 1
+
+
+class PrescriptionSerializer(serializers.ModelSerializer):
+    '''
+    Create Prescription include data{
+    }
+    '''
+    patient_id = serializers.CharField(max_length=255)
+
+    class Meta:
+        model = Prescription
+        fields = ["id", "patient_id", "patient", "total_amount"]
+        read_only = ['id', "user"]
+        depth = 1
+
+
+class MedicineSerializer(serializers.ModelSerializer):
+    '''
+    Create Medicine include data{
+    }
+    '''
+
+    class Meta:
+        model = Medicine
+        fields = ["id", "name", "description", "price"]
         read_only = ['id']
         depth = 1

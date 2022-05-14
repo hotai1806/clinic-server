@@ -1,6 +1,12 @@
+from enum import Enum
 from django.db import models
 from authentication.models import ModelBase, User
 # Create your models here.
+class AppointmentStatus(Enum):   # A subclass of Enum
+    APPROVED = "APPROVED"
+    PENDING = "PENDING"
+    CANCELED = "CANCELED"
+    REJECTED = "REJECTED"
 
 class ScheduleTask(ModelBase):
     user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
@@ -11,6 +17,8 @@ class Appointment(ModelBase):
     user = models.ForeignKey(User,null=False,related_name='user', on_delete=models.CASCADE)
     patient = models.ForeignKey(User,null=False,related_name='patient' , on_delete=models.CASCADE)
     appointment_date = models.DateTimeField()
+    user_approve = models.ForeignKey(User,null=False,related_name='user_approve', on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, choices=[(tag.name, tag.value) for tag in AppointmentStatus])
 
 class Medicine(ModelBase):
     name = models.CharField(max_length=100)

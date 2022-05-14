@@ -1,7 +1,6 @@
-from rest_framework import  serializers
+from rest_framework import serializers
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
-
 
 
 from authentication.models import User
@@ -20,7 +19,22 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    '''
+    Register user include data{
+        username, password, email, first_name, last_name
+    }
+    '''
+    username = serializers.EmailField(max_length=255)
+    first_name = serializers.CharField(max_length=255)
+    last_name = serializers.CharField(max_length=255)
+    password = serializers.CharField(max_length=255)
+    birth_date = serializers.DateField(required=False)
+    avatar = serializers.ImageField(required=False)
 
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'gender',
+                  'password', 'avatar','birth_date']
 
     def validate(self, data):
         try:
@@ -33,21 +47,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not data.get('password'):
             raise serializers.ValidationError(_("Empty Password"))
 
-
         return data
+
     def create(self, validated_data):
-            data = validated_data.copy()
-            user = User(**data)
-            user.set_password(user.password)
-            user.save()
+        data = validated_data.copy()
+        user = User(**data)
+        user.set_password(user.password)
+        user.save()
 
-            return user
-
-    class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name',
-                  'password','email')
-
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
             path = '/static/%s' % obj.avatar.name
 
             return request.build_absolute_uri(path)
+
     def create(self, validated_data):
         data = validated_data.copy()
         user = User(**data)
@@ -67,7 +76,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
-
 
     class Meta:
         model = User
@@ -79,5 +87,3 @@ class UserSerializer(serializers.ModelSerializer):
                 'write_only': True
             }
         }
-
-    

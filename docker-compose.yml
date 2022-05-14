@@ -2,15 +2,17 @@ version: "3.0"
 services:
   db:
     image: postgres:11.9-alpine
+    container_name: clinic-db
     environment:
       POSTGRES_DB: clinic
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: qeKmEKR52
+      POSTGRES_PASSWORD: admin
     ports:
       - 5433:5432
     networks:
       - djangonetwork
   web-backend:
+    container_name: clinic
     build: .
     image: "clinic:latest"
     ports:
@@ -19,8 +21,8 @@ services:
       sh -c "
             poetry shell;\
             cd server;\
-            # python3 manage.py makemigrations; \
-            # python3 manage.py migrate; \
+            python3 manage.py makemigrations; \
+            python3 manage.py migrate; \
             # python3 manage.py loaddata permissions; \
             # python3 manage.py loaddata groups; \
             # python3 manage.py loaddata profile;\
@@ -28,7 +30,8 @@ services:
             # python3 manage.py loaddata payment;\
             # python3 manage.py loaddata drug;\
             # python3 manage.py loaddata doctor;\
-            # echo \"from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')\" | python3 manage.py shell; \
+
+            echo \"from authentication.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')\" | python3 manage.py shell; \
             # echo \"from authentication.models import User; User.objects.create_user(username='t1',password='1').user_groups.set([1])\" | python3 manage.py shell; \
             poetry shell && python3 manage.py runserver 0.0.0.0:8000"
     env_file:

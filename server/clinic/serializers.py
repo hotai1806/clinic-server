@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from clinic.models import Appointment, Medicine, \
     Prescription, PrescriptionItem, ScheduleTask, Diagnostician
+from authentication.models import User
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -10,11 +11,14 @@ class AppointmentSerializer(serializers.ModelSerializer):
     '''
     patient_id = serializers.CharField(max_length=255)
     user_id = serializers.CharField(max_length=255)
+    user_approve_id = serializers.CharField(max_length=255)
+    status = serializers.CharField(max_length=255, allow_blank=True)
 
     class Meta:
         model = Appointment
         fields = ["id", "patient_id",
-                  "user_id", "appointment_date"]
+                  "user_id", "appointment_date",
+                  "user_approve_id", "status"]
         read_only = ['id']
 
 

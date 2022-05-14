@@ -49,3 +49,4 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
     serializer_class = PrescriptionSerializer
     queryset = Prescription.objects.all()
     http_method_names = ['get', 'patch', 'post']
+

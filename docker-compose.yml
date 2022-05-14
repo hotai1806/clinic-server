@@ -12,12 +12,13 @@ services:
       - djangonetwork
   web-backend:
     build: .
-    image: 'clinic:latest'
+    image: "clinic:latest"
     ports:
       - 8000:8000
     command: >
       sh -c "
-            cd server && \
+            poetry shell;\
+            cd server;\
             # python3 manage.py makemigrations; \
             # python3 manage.py migrate; \
             # python3 manage.py loaddata permissions; \
@@ -29,7 +30,7 @@ services:
             # python3 manage.py loaddata doctor;\
             # echo \"from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')\" | python3 manage.py shell; \
             # echo \"from authentication.models import User; User.objects.create_user(username='t1',password='1').user_groups.set([1])\" | python3 manage.py shell; \
-            python3 manage.py runserver 0.0.0.0:8000"
+            poetry shell && python3 manage.py runserver 0.0.0.0:8000"
     env_file:
       - .env
     environment:
@@ -37,7 +38,7 @@ services:
       DATABASE_URL: postgres://admin:qeKmEKR52@db:5432/clinic
     depends_on:
       - db
-      - rabbit
+
     links:
       - db:db
     networks:
@@ -45,7 +46,6 @@ services:
     volumes:
       - "./:/app"
 
-
 networks:
-    djangonetwork:
-      driver: bridge
+  djangonetwork:
+    driver: bridge

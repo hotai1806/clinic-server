@@ -12,8 +12,9 @@ Markdown = "^3.3.6"
 django-filter = "^21.1"
 django-oauth-toolkit = "^1.7.1"
 django-cors-headers = "^3.11.0"
-psycopg2 = "^2.9.3"
 Pillow = "^9.1.0"
+mailchimp-transactional = "^1.0.47"
+psycopg2-binary = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 

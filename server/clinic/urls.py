@@ -5,7 +5,7 @@ from . import views
 # from rest_framework import routers
 from clinic.views import AppointmentViewSet, DiagnosticianViewSet, \
     PrescriptionItemViewSet, PrescriptionViewSet, ScheduleTaskViewSet, \
-    MedicineViewSet
+    MedicineViewSet, get_history_appointment
 
 router = routers.DefaultRouter()
 
@@ -16,7 +16,7 @@ router.register(prefix='prescription-detail', viewset=PrescriptionItemViewSet, b
 router.register(prefix='prescription', viewset=PrescriptionViewSet, basename='user')
 router.register(prefix='schedule-task', viewset=ScheduleTaskViewSet, basename='user')
 router.register(prefix='medicine', viewset=MedicineViewSet, basename='user')
-
 urlpatterns = [
+    path('appointment-history/<int:pk>/', get_history_appointment),
 
 ]

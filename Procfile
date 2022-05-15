@@ -1,1 +1,1 @@
-web: cd server && python manage.py runserver 0.0.0.0:$PORT
+web: gunicorn server.wsgi --log-file -

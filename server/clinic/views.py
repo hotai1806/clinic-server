@@ -31,7 +31,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     http_method_names = ['get', 'patch', 'post']
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request,pk, *args, **kwargs):
         from datetime import datetime, timedelta
         try:
             get_current_account_id = request.META['current_account_id']
@@ -61,6 +61,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         except Exception as e:
             print("main", e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
 
 
 class DiagnosticianViewSet(viewsets.ModelViewSet):
@@ -90,7 +92,7 @@ class MedicineViewSet(viewsets.ModelViewSet):
     queryset = Medicine.objects.all()
     http_method_names = ['get', 'patch', 'post']
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['^name']
+    filterset_fields = ['name']
 
 
 class PrescriptionViewSet(viewsets.ModelViewSet):
@@ -116,10 +118,6 @@ def get_history_appointment(request, pk):
         # if query_appointment_date:
             # get_history_appointment.filter(appointment_date=query_appointment_date)
         serializer = serializers.serialize('json', get_history_appointment)
-        print(serializer)
-
-        print(serializer)
-
         return Response(data=json.loads(serializer), status=status.HTTP_200_OK)
     except Exception as e:
         print("main", e)

@@ -86,6 +86,9 @@ class MedicineSerializer(serializers.ModelSerializer):
     Create Medicine include data{
     }
     '''
+    name = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=255)
+    price = serializers.CharField(max_length=255)
 
     class Meta:
         model = Medicine

@@ -36,4 +36,4 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
-    role = models.ForeignKey(Role, null=True , on_delete=models.SET_NULL)
+    # role = models.ForeignKey(Role, null=True , on_delete=models.SET_NULL)

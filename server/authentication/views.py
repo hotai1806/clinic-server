@@ -17,9 +17,14 @@ from authentication.serializers import UserSerializer, GroupSerializer, Register
 # Create the API views
 class UserList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    def get_queryset(self):
+        user_group = self.request.query_params.get('user_group', None)
+        print(user_group)
+        if user_group is None:
+            return User.objects.all()
+        return  User.objects.filter(groups__name__in=[user_group])
 
 class UserDetails(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
@@ -55,3 +60,13 @@ class UserRegister(OAuthLibMixin, APIView):
                     return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             return Response(data=str(serializer.errors), status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_403_FORBIDDEN, data={"error": "You are not authorized to access this resource"})
+
+
+def get_current_role(request):
+    try:
+        get_current_account_id = request.META['current_account_id']
+        get_current_user = User.objects.get(id=get_current_account_id)
+        get_current_user_role = get_current_user.groups.all()
+        return get_current_user_role
+    except Exception as e:
+        return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

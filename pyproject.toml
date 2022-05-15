@@ -18,6 +18,7 @@ psycopg2-binary = "^2.9.3"
 django-rest-swagger = "^2.2.0"
 drf-yasg = "^1.20.0"
 dj-database-url = "^0.5.0"
+whitenoise = "^6.1.0"
 
 [tool.poetry.dev-dependencies]
 

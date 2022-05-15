@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 WORKDIR /app
 
@@ -6,10 +6,15 @@ COPY . .
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PATH="/opt/venv/bin:$PATH"
 
 RUN apt-get update \
-    && apt-get install python-psycopg2 -y
+    && apt-get -y install postgresql
 
-RUN pip3 install -r requirements.txt
+RUN apt-get update \
+    && pip install poetry
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-interaction --no-ansi
+
 
 EXPOSE 8000

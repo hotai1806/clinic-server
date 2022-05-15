@@ -14,8 +14,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework import permissions
+from clinic.urls import router as clinic_router
+# from drf_yasg.views import get_schema_view
+# from drf_yasg import openapi
 
+# schema_view = get_swagger_view(openapi.Info(
+#     title="Clinic API",
+#     default_version='v1',
+#     description="Test description",
+
+# ), public=True, permission_classes=(permissions.AllowAny,))
+
+router = DefaultRouter(trailing_slash=False)
+router.registry.extend(clinic_router.registry)
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('auth/', include('authentication.urls')),
+    path('api/', include(router.urls)),
+    path('api/', include('clinic.urls')),
+    # path('swagger/', schema_view),
+
 ]

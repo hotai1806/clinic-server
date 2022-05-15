@@ -1,4 +1,3 @@
-from unicodedata import name
 from django.db import models
 
 # Create your models here.
@@ -22,7 +21,19 @@ class Role(ModelBase):
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(null=True, upload_to='users/%Y/%m')
-    email = models.EmailField(null=False)
+    # DOCTOR = 1
+    # NURSE = 2
+    # SURGEN =3
 
+    # ROLE_CHOICES = (
+    #       (DOCTOR, 'Doctor'),
+    #       (NURSE, 'Nurse'),
+    #       (SURGEN, 'Surgen'),
+    #   )
+
+    avatar = models.ImageField(null=True, upload_to='avatars')
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
+    gender = models.CharField(max_length=100, blank=True, null=True)
+    birth_date = models.DateField(null=True, blank=True)
     role = models.ForeignKey(Role, null=True , on_delete=models.SET_NULL)

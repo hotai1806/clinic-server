@@ -2,6 +2,7 @@ from rest_framework import serializers
 from clinic.models import Appointment, Medicine, \
     Prescription, PrescriptionItem, ScheduleTask, Diagnostician
 from authentication.models import User
+from authentication.serializers import UserSerializer
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -59,6 +60,7 @@ class ScheduleTaskSerializer(serializers.ModelSerializer):
     }
     '''
     user_id = serializers.CharField(max_length=255)
+    user= UserSerializer(read_only=True)
 
     class Meta:
         model = ScheduleTask

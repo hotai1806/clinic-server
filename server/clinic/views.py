@@ -82,8 +82,10 @@ class PrescriptionItemViewSet(viewsets.ModelViewSet):
 class ScheduleTaskViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
     serializer_class = ScheduleTaskSerializer
-    queryset = ScheduleTask.objects.all()
+    queryset = ScheduleTask.objects.all().order_by('-appointment_date')
     http_method_names = ['get', 'patch', 'post']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user_id']
 
 
 class MedicineViewSet(viewsets.ModelViewSet):

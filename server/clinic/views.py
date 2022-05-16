@@ -5,7 +5,7 @@ from rest_framework import viewsets, status, permissions, exceptions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework import filters
 from authentication.models import User
 
 from django.core import serializers
@@ -93,8 +93,8 @@ class MedicineViewSet(viewsets.ModelViewSet):
     serializer_class = MedicineSerializer
     queryset = Medicine.objects.all()
     http_method_names = ['get', 'patch', 'post']
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name']
 
 
 class PrescriptionViewSet(viewsets.ModelViewSet):

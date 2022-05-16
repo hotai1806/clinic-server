@@ -30,7 +30,7 @@ class Prescription(ModelBase):
 
 
 class PrescriptionItem(ModelBase):
-    prescription = models.ForeignKey(Prescription,null=False, on_delete=models.CASCADE)
+    prescription = models.ForeignKey(Prescription,null=False, on_delete=models.CASCADE, related_name='items')
     medicine = models.ForeignKey(Medicine,null=False, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     description = models.TextField(null=True, blank=True)

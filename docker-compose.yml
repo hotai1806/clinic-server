@@ -22,8 +22,8 @@ services:
             poetry shell;\
             cd server;\
             poetry install;\
-            python3 manage.py makemigrations; \
-            python3 manage.py migrate; \
+            # python3 manage.py makemigrations; \
+            # python3 manage.py migrate; \
             # python3 manage.py loaddata permissions; \
             # python3 manage.py loaddata groups; \
             # python3 manage.py loaddata profile;\

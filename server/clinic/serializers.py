@@ -48,12 +48,12 @@ class PrescriptionItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PrescriptionItem
-        fields = ["id", "quantity",
-                  "medicine_id", 'prescription', 'prescription_id']
+        fields = ["id", "quantity", "medicine",
+                  "medicine_id", 'prescription_id']
         read_only = ['id']
         extra_kwargs = {
             'url': {'lookup_field': 'prescription_id'},
-            }
+        }
         depth = 1
 
 
@@ -63,15 +63,13 @@ class ScheduleTaskSerializer(serializers.ModelSerializer):
     }
     '''
     user_id = serializers.CharField(max_length=255)
-    user= UserSerializer(read_only=True)
-    
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = ScheduleTask
         fields = ["id", "user_id", "user", "appointment_date"]
         read_only = ['id', "user"]
         depth = 1
-
 
 
 class MedicineSerializer(serializers.ModelSerializer):
@@ -89,18 +87,22 @@ class MedicineSerializer(serializers.ModelSerializer):
         read_only = ['id']
         depth = 1
 
+
 class PrescriptionSerializer(serializers.ModelSerializer):
     '''
     Create Prescription include data{
     }
     '''
     patient_id = serializers.CharField(max_length=255)
-    patient= UserSerializer(read_only=True)
-    # medicine = MedicineSerializer(read_only=True)
+    patient = UserSerializer(read_only=True)
+    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    items = PrescriptionItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Prescription
-        fields = ["id", "patient_id", "patient", "total_amount",'items']
+        fields = ["id", "patient_id", "patient",
+                  "total_amount", "items",]
         read_only = ['id']
         depth = 2
-
+    # def create(self, validated_data):
+    #     return super().create(validated_data)

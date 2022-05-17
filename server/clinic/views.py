@@ -31,7 +31,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     http_method_names = ['get', 'patch', 'post']
 
-    def create(self, request,pk, *args, **kwargs):
+    def create(self, request, pk, *args, **kwargs):
         from datetime import datetime, timedelta
         try:
             get_current_account_id = request.META['current_account_id']
@@ -61,6 +61,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         except Exception as e:
             print("main", e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
@@ -100,25 +101,45 @@ class MedicineViewSet(viewsets.ModelViewSet):
 class PrescriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
     serializer_class = PrescriptionSerializer
-    queryset = Prescription.objects.all()
+    queryset = Prescription.objects.all().order_by('id')
     http_method_names = ['get', 'patch', 'post']
 
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data.copy()
+            list_items = data.pop('list_items')
+            prescription = Prescription.objects.create(
+                patient_id=request.data['patient_id'],
+                total_amount=request.data.get('total_amount', 0),
+            )
+            prescription.save()
+            for item in list(list_items):
+                PrescriptionItem.objects.create(
+                    prescription_id=prescription.id,
+                    medicine_id=int(item['medicine_id']),
+                    quantity=int(item['quantity']),
+                    description=item.get('description', ''),
+                )
+            return Response(data={"prescription_id": prescription.id}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print("main", e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
-@permission_classes((permissions.AllowAny,))
+
+@ api_view(['GET'])
+@ permission_classes((permissions.AllowAny,))
 def get_history_appointment(request, pk):
     try:
         query_appointment_date = request.GET.get('appointment_date')
         print(pk)
         get_history_appointment = Appointment.objects.filter(
-            patient_id=pk)\
-            .order_by('-appointment_date').all()
+            patient_id=pk).order_by('-appointment_date').all()
         if query_appointment_date:
             get_history_appointment = get_history_appointment.filter(
                 appointment_date__date=query_appointment_date)
         print(get_history_appointment[1].appointment_date)
         # if query_appointment_date:
-            # get_history_appointment.filter(appointment_date=query_appointment_date)
+        # get_history_appointment.filter(appointment_date=query_appointment_date)
         serializer = serializers.serialize('json', get_history_appointment)
         return Response(data=json.loads(serializer), status=status.HTTP_200_OK)
     except Exception as e:

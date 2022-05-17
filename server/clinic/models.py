@@ -28,7 +28,6 @@ class Prescription(ModelBase):
     patient = models.ForeignKey(User,null=False, on_delete=models.CASCADE)
     total_amount = models.FloatField()
 
-
 class PrescriptionItem(ModelBase):
     prescription = models.ForeignKey(Prescription,null=False, on_delete=models.CASCADE, related_name='items')
     medicine = models.ForeignKey(Medicine,null=False, on_delete=models.CASCADE)
@@ -43,3 +42,11 @@ class Diagnostician(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     symptom = models.TextField(null=True, blank=True)
     conclusion = models.TextField(null=True, blank=True)
+
+
+class Payment(ModelBase):
+    patient = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True, related_name='patient_payment', related_query_name='payment')
+    doctor = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True, related_name='doctor_payment', related_query_name='payment')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)

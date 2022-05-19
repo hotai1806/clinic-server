@@ -26,7 +26,7 @@ import json
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
-    permission_classes = [(permissions.IsAuthenticated)]
+    permission_classes = [(permissions.AllowAny)]
     serializer_class = AppointmentSerializer
     queryset = Appointment.objects.all()
     http_method_names = ['get', 'patch', 'post']

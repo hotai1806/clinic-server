@@ -17,7 +17,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 
 # Create the API views
 class UserList(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    permission_classes = [permissions.AllowAny]
     # queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -30,20 +30,24 @@ class UserList(generics.ListCreateAPIView):
 
 
 class UserDetails(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    # permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    permission_classes = [permissions.AllowAny]
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class GroupList(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated, TokenHasScope]
+    # permission_classes = [permissions.IsAuthenticated, TokenHasScope]
+    permission_classes = [permissions.AllowAny]
     required_scopes = ['groups']
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
 
 class UserRegister(OAuthLibMixin, APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
+
     serializers_class = RegisterSerializer
     server_class = oauth2_settings.OAUTH2_SERVER_CLASS
     validator_class = oauth2_settings.OAUTH2_VALIDATOR_CLASS

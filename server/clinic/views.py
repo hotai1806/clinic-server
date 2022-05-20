@@ -31,7 +31,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     http_method_names = ['get', 'patch', 'post']
 
-    def create(self, request, pk, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         from datetime import datetime, timedelta
         try:
             get_current_account_id = request.META['current_account_id']
@@ -47,6 +47,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             get_current_docter = User.objects.get(id=request.data['user_id'])
             # get_current_approve_user = User.objects.get(id=request.data['user_approve_id'])
             data_copy = request.data.copy()
+            print("double check",get_current_account_id)
             data_copy['patient_id'] = str(get_current_account_id)
 
             serializer = self.get_serializer(data=data_copy)

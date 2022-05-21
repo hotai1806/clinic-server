@@ -1,20 +1,30 @@
+import json
 import re
 from oauth2_provider.models import AccessToken
+from rest_framework.response import Response
 from rest_framework.authentication import BaseAuthentication
+from rest_framework import status
 from functools import wraps
+from django.http import HttpResponseForbidden
+
 def add_info_user_middleware(get_response):
     @wraps(get_response)
     def middleware(request):
-        app_tk = request.headers.get('Authorization')
-        if app_tk is None:
+        try:
+            app_tk = request.headers.get('Authorization')
+            if app_tk is None:
+                return get_response(request)
+            m = app_tk.split(' ')
+            app_tk = m[1]
+            access_user = AccessToken.objects.get(token=app_tk)
+            print(access_user.user_id, 'acc_tk')
+            request.META['current_account_id'] = access_user.user_id
             return get_response(request)
-        m = app_tk.split(' ')
-        app_tk = m[1]
-        access_user = AccessToken.objects.get(token=app_tk)
-        print(access_user.user_id, 'acc_tk')
-        request.META['current_account_id'] = access_user.user_id
-        return get_response(request)
+        except Exception as e:
+            print("error", e)
+            return HttpResponseForbidden("Unauthorized")
     return middleware
+
 
 class CustomMiddleware(object):
     def __init__(self, get_response):

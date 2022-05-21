@@ -37,6 +37,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     queryset = Appointment.objects.all()
     http_method_names = ['get', 'patch', 'post']
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filterset_fields = ['status']
+
 
     def create(self, request, *args, **kwargs):
         from datetime import datetime, timedelta
@@ -108,6 +111,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             else:
                 print("Email not sent")
                 return super().update(request, *args, **kwargs)
+        return super().update(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         try:

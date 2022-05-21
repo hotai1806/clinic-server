@@ -11,17 +11,20 @@ class AppointmentSerializer(serializers.ModelSerializer):
     Create Diagnosise include data{
     }
     '''
-    patient_id = serializers.CharField(max_length=255)
-    user_id = serializers.CharField(max_length=255)
-    user_approve_id = serializers.CharField(max_length=255)
+    patient_id = serializers.CharField(max_length=255, write_only=True)
+    user_id = serializers.CharField(max_length=255, write_only=True)
+    user_approve_id = serializers.CharField(max_length=255, write_only=True)
     status = serializers.CharField(max_length=255, allow_blank=True)
+    user = UserSerializer(read_only=True)
+    user_approve = UserSerializer(read_only=True)
+    patient = UserSerializer(read_only=True)
 
     class Meta:
         model = Appointment
-        fields = ["id", "patient_id",
+        fields = ["id", "patient_id","patient", "user", "user_approve",
                   "user_id", "appointment_date",
                   "user_approve_id", "status"]
-        read_only = ['id']
+        read_only = ['id', 'patient', 'user', 'user_approve',]
 
 
 class DiagnosticianSerializer(serializers.ModelSerializer):

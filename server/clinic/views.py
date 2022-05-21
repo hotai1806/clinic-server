@@ -29,7 +29,6 @@ import json
 from server.perm import CustomDjangoModelPermission
 
 
-
 class AppointmentViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.IsAuthenticated)]
     serializer_class = AppointmentSerializer
@@ -49,8 +48,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 return Response(data={"error": "Appointment is full"}, status=status.HTTP_400_BAD_REQUEST)
             get_current_patient = User.objects.get(
                 id=get_current_account_id)
-            get_current_docter = User.objects.get(id=request.data['user_id'] if 'user_id' in request.data else '1')
-            get_current_approve_user = User.objects.get(id=request.data['user_approve_id'] if 'user_approve_id' in request.data else '1')
+            get_current_docter = User.objects.get(
+                id=request.data['user_id'] if 'user_id' in request.data else '1')
+            get_current_approve_user = User.objects.get(
+                id=request.data['user_approve_id'] if 'user_approve_id' in request.data else '1')
             data_copy = request.data.copy()
             print("double check", get_current_account_id)
             data_copy['patient_id'] = str(get_current_account_id)
@@ -184,12 +185,22 @@ def get_history_appointment(request):
 @authentication_classes([])
 @permission_classes((permissions.AllowAny, ))
 def static_payment(request):
-    from django.db import connection
+    from django.db.models.functions import TruncMonth, TruncQuarter, TruncYear,\
+        ExtractQuarter, ExtractMonth, ExtractYear
+    #  year, month, quarter DATA_TYPE
     filter_query = request.GET.get('filter_query')
 
-    truncate_month = connection.ops.date_trunc_sql('month', 'created_date')
-    payment = Payment.objects.extra({'month': truncate_month}).values(
-        'created_date__month').annotate(Sum('total_amount')).distinct()
+    payment = Payment.objects.all()
+    if filter_query == 'year':
+        payment = payment.annotate(year=TruncYear('created_date')).values(year=ExtractYear('created_date')).annotate(
+            total_amount=Sum('total_amount')).order_by('year')
+    if filter_query == 'quarter':
+        payment = payment.annotate(quarter=TruncQuarter('created_date')).values(quarter=ExtractQuarter('created_date')).annotate(
+            total_amount=Sum('total_amount')).order_by('quarter')
+    if filter_query == 'month':
+        payment = payment.annotate(month=TruncMonth('created_date')).values(month=ExtractMonth('created_date')).annotate(
+            total_amount=Sum('total_amount')).order_by('month')
+        # payment = payment.
     return Response(data=payment)
 
 
@@ -197,10 +208,23 @@ def static_payment(request):
 @authentication_classes([])
 @permission_classes((permissions.AllowAny, ))
 def static_patient(request):
-    from django.db import connection
+    from django.db.models.functions import TruncMonth, TruncQuarter, TruncYear,\
+        ExtractQuarter, ExtractMonth, ExtractYear
+    #  year, month, quarter DATA_TYPE
+    filter_query = request.GET.get('filter_query')
 
-    truncate_month = connection.ops.date_trunc_sql('month', 'created_date')
-    patient = Appointment.objects.extra({'month': truncate_month}).values(
-        'created_date__month').annotate(Count('patient_id')).distinct()
+    payment = Appointment.objects.all()
+    print("OBJECT", payment)
 
-    return Response(data=patient)
+    if filter_query == 'year':
+        payment = payment.annotate(year=TruncYear('created_date')).values(year=ExtractYear('created_date')).annotate(
+            total_amount=Sum('patient_id')).order_by('year')
+    if filter_query == 'quarter':
+
+        payment = payment.annotate(quarter=TruncQuarter('created_date')).values(quarter=ExtractQuarter('created_date')).annotate(
+            total_amount=Sum('patient_id')).order_by('quarter')
+    if filter_query == 'month':
+        payment = payment.annotate(month=TruncMonth('created_date')).values(month=ExtractMonth('created_date')).annotate(
+            total_amount=Sum('patient_id')).order_by('month')
+        # payment = payment.
+    return Response(data=payment)

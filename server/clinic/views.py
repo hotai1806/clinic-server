@@ -26,6 +26,8 @@ from oauth2_provider.models import AccessToken
 import json
 
 # Create your views here.
+from server.perm import CustomDjangoModelPermission
+
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
@@ -47,11 +49,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 return Response(data={"error": "Appointment is full"}, status=status.HTTP_400_BAD_REQUEST)
             get_current_patient = User.objects.get(
                 id=get_current_account_id)
-            get_current_docter = User.objects.get(id=request.data['user_id'])
-            # get_current_approve_user = User.objects.get(id=request.data['user_approve_id'])
+            get_current_docter = User.objects.get(id=request.data['user_id'] if 'user_id' in request.data else '1')
+            get_current_approve_user = User.objects.get(id=request.data['user_approve_id'] if 'user_approve_id' in request.data else '1')
             data_copy = request.data.copy()
             print("double check", get_current_account_id)
             data_copy['patient_id'] = str(get_current_account_id)
+            data_copy['user_id'] = str(get_current_docter.id)
+            data_copy['user_approve_id'] = str(get_current_approve_user.id)
 
             serializer = self.get_serializer(data=data_copy)
             serializer.is_valid(raise_exception=True)
@@ -109,7 +113,7 @@ class ScheduleTaskViewSet(viewsets.ModelViewSet):
 
 
 class MedicineViewSet(viewsets.ModelViewSet):
-    permission_classes = [(permissions.AllowAny)]
+    permission_classes = [(CustomDjangoModelPermission)]
     serializer_class = MedicineSerializer
     queryset = Medicine.objects.all()
     http_method_names = ['get', 'patch', 'post']

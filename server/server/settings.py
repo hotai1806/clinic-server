@@ -174,3 +174,13 @@ USE_TZ = False
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER =  'apiKey'
+real = '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'
+test = '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'
+SENDGRID_API_KEY = test
+EMAIL_HOST_PASSWORD =test
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

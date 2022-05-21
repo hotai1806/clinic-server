@@ -8,6 +8,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.db.models import Q, Sum, Count
 from authentication.models import User
+import sendgrid
+from sendgrid.helpers.mail import *
+from server.settings import SENDGRID_API_KEY
 
 from django.core import serializers
 
@@ -72,7 +75,39 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        from sendgrid.helpers.mail import Mail
+        get_current_account_id = request.META['current_account_id']
+        get_current_patient = User.objects.get(
+            id=get_current_account_id)
+
+        from_email = "1751010127tai@ou.edu.vn"
+        to_email = get_current_patient.username
+        if request.data['status'] == 'APPROVED':
+           
+            print('myemail',to_email)
+            mail = Mail(from_email=from_email, to_emails=to_email, subject="Appointment Approved",
+                        html_content='<strong>Your appointment has been approved</strong>')
+            api_key = SENDGRID_API_KEY
+            sg = sendgrid.SendGridAPIClient(api_key)
+            response = sg.send(mail)
+            if response.status_code == 202:
+                print("Email sent")
+                return super().update(request, *args, **kwargs)
+            else:
+                print("Email not sent")
+                return super().update(request, *args, **kwargs)
+        if request.data['status'] == 'REJECTED':
+            mail = Mail(from_email=from_email, to_emails=to_email, subject="Appointment REJECTED",
+                        html_content='<strong>Your appointment has been REJECTED</strong>')
+            api_key = SENDGRID_API_KEY
+            sg = sendgrid.SendGridAPIClient(api_key)
+            response = sg.send(mail)
+            if response.status_code == 202:
+                print("Email sent")
+                return super().update(request, *args, **kwargs)
+            else:
+                print("Email not sent")
+                return super().update(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         try:

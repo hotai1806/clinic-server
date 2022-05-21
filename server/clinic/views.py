@@ -37,9 +37,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     queryset = Appointment.objects.all()
     http_method_names = ['get', 'patch', 'post']
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['status']
-
 
     def create(self, request, *args, **kwargs):
         from datetime import datetime, timedelta
@@ -86,8 +86,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         from_email = "1751010127tai@ou.edu.vn"
         to_email = get_current_patient.username
         if request.data['status'] == 'APPROVED':
-           
-            print('myemail',to_email)
+
+            print('myemail', to_email)
             mail = Mail(from_email=from_email, to_emails=to_email, subject="Appointment Approved",
                         html_content='<strong>Your appointment has been approved</strong>')
             api_key = SENDGRID_API_KEY
@@ -163,6 +163,7 @@ class MedicineViewSet(viewsets.ModelViewSet):
 
 class PaymentVietSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
+
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     http_method_names = ['get', 'patch', 'post']
@@ -170,6 +171,7 @@ class PaymentVietSet(viewsets.ModelViewSet):
 
 class PrescriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
+
     serializer_class = PrescriptionSerializer
     queryset = Prescription.objects.all().order_by('id')
     http_method_names = ['get', 'patch', 'post']
@@ -197,7 +199,7 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
 
 
 @ api_view(['GET'])
-@ permission_classes((permissions.AllowAny,))
+@permission_classes((permissions.AllowAny, ))
 def get_history_appointment(request):
     try:
         query_appointment_date = request.GET.get('appointment_date')

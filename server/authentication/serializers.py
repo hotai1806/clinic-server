@@ -29,7 +29,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=255)
     birth_date = serializers.DateField(required=False)
-    avatar = serializers.ImageField(required=False)
+    avatar = serializers.CharField( required=False)
 
     class Meta:
         model = User
@@ -59,15 +59,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    avatar = serializers.SerializerMethodField(source='avatar')
+    # avatar = serializers.CharField(required=False)
 
-    def get_avatar(self, obj):
-        request = self.context['request']
-        if obj.avatar and not obj.avatar.name.startswith("/static"):
+    # def get_avatar(self, obj):
+    #     request = self.context['request']
+    #     if obj.avatar and not obj.avatar.name.startswith("/static"):
 
-            path = '/static/%s' % obj.avatar.name
+    #         path = '/static/%s' % obj.avatar.name
 
-            return request.build_absolute_uri(path)
+    #         return request.build_absolute_uri(path)
 
     def create(self, validated_data):
         data = validated_data.copy()
@@ -81,7 +81,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'last_name',
                   'username', 'password', 'groups',
-                  'avatar','gender','avatar']
+                  'avatar','gender',]
+        read_only = ['avatar']
         extra_kwargs = {
             'password': {
                 'write_only': True

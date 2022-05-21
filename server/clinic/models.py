@@ -49,4 +49,6 @@ class Payment(ModelBase):
         User, on_delete=models.CASCADE, blank=True, null=True, related_name='patient_payment', related_query_name='payment')
     doctor = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True, related_name='doctor_payment', related_query_name='payment')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    medical_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    prescription = models.ForeignKey(Prescription,null=False, on_delete=models.CASCADE, related_name='prescription_payment')

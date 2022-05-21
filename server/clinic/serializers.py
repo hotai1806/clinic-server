@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from clinic.models import Appointment, Medicine, \
-    Prescription, PrescriptionItem, ScheduleTask, Diagnostician
+    Prescription, PrescriptionItem, ScheduleTask, Diagnostician\
+        ,Payment
 from authentication.models import User
 from authentication.serializers import UserSerializer
 
@@ -102,6 +103,27 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         model = Prescription
         fields = ["id", "patient_id", "patient",
                   "total_amount", "items",]
+        read_only = ['id']
+        depth = 2
+    # def create(self, validated_data):
+    #     return super().create(validated_data)
+
+class PaymentSerializer(serializers.ModelSerializer):
+    '''
+    Create Payment include data{
+    }
+    '''
+    patient_id = serializers.CharField(max_length=255)
+    doctor_id = serializers.CharField(max_length=255)
+    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    medical_cost = serializers.DecimalField(max_digits=10, decimal_places=2)
+    # Field Views
+    patient = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = ["id", "patient_id", "patient", "medical_cost",
+                  "doctor_id", "items", "total_amount",]
         read_only = ['id']
         depth = 2
     # def create(self, validated_data):

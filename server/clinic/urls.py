@@ -19,7 +19,7 @@ router.register(prefix='schedule-task', viewset=ScheduleTaskViewSet, basename='u
 router.register(prefix='medicine', viewset=MedicineViewSet, basename='user')
 router.register(prefix='payment', viewset=PaymentVietSet, basename='user')
 urlpatterns = [
-    path('appointment-history/<int:pk>/', get_history_appointment),
+    path('appointment-history/', get_history_appointment),
     path('static-payment/', static_payment),
     path('static-patient/', static_patient),
 

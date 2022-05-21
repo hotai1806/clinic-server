@@ -50,7 +50,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             get_current_docter = User.objects.get(id=request.data['user_id'])
             # get_current_approve_user = User.objects.get(id=request.data['user_approve_id'])
             data_copy = request.data.copy()
-            print("double check",get_current_account_id)
+            print("double check", get_current_account_id)
             data_copy['patient_id'] = str(get_current_account_id)
 
             serializer = self.get_serializer(data=data_copy)
@@ -68,6 +68,21 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            get_current_account_id = request.META['current_account_id']
+            user_current = User.objects.get(
+                id=get_current_account_id).groups.values_list('name', flat=True)
+            if 'staff' in user_current or 'nurse' in user_current or \
+                    'doctor' in user_current or 'admin' in user_current:
+                return super().list(request, *args, **kwargs)
+            self.queryset = self.queryset.filter(
+                patient_id=get_current_account_id)
+            return super().list(request, *args, **kwargs)
+        except Exception as e:
+            print("main", e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class DiagnosticianViewSet(viewsets.ModelViewSet):
@@ -101,11 +116,13 @@ class MedicineViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['^name']
 
+
 class PaymentVietSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     http_method_names = ['get', 'patch', 'post']
+
 
 class PrescriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
@@ -137,12 +154,15 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
 
 @ api_view(['GET'])
 @ permission_classes((permissions.AllowAny,))
-def get_history_appointment(request, pk):
+def get_history_appointment(request):
     try:
         query_appointment_date = request.GET.get('appointment_date')
-        print(pk)
-        get_history_appointment = Appointment.objects.filter(
-            patient_id=pk).order_by('-appointment_date').all()
+        query_patient_id = request.GET.get('patient_id')
+        get_history_appointment = Appointment.objects.order_by(
+            '-appointment_date').all()
+        if query_patient_id:
+            get_history_appointment = get_history_appointment.filter(
+                patient_id=query_patient_id)
         if query_appointment_date:
             get_history_appointment = get_history_appointment.filter(
                 appointment_date__date=query_appointment_date)
@@ -163,18 +183,17 @@ def static_payment(request):
     from django.db import connection
     filter_query = request.GET.get('filter_query')
 
-
     truncate_month = connection.ops.date_trunc_sql('month', 'created_date')
     payment = Payment.objects.extra({'month': truncate_month}).values(
         'created_date__month').annotate(Sum('total_amount')).distinct()
     return Response(data=payment)
+
 
 @api_view(['GET'])
 @authentication_classes([])
 @permission_classes((permissions.AllowAny, ))
 def static_patient(request):
     from django.db import connection
-
 
     truncate_month = connection.ops.date_trunc_sql('month', 'created_date')
     patient = Appointment.objects.extra({'month': truncate_month}).values(

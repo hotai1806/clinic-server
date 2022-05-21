@@ -16,6 +16,8 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 # Create your views here.
 
 # Create the API views
+
+
 class UserList(generics.ListCreateAPIView):
     permission_classes = [permissions.AllowAny]
     # queryset = User.objects.all()
@@ -68,13 +70,16 @@ class UserRegister(OAuthLibMixin, APIView):
             return Response(data=str(serializer.errors), status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_403_FORBIDDEN, data={"error": "You are not authorized to access this resource"})
 
+
 @api_view(['GET'])
 def get_current_role(request):
     try:
         get_current_account_id = request.META['current_account_id']
         get_current_user = User.objects.get(id=get_current_account_id)
+        full_name = get_current_user.first_name + ' ' + get_current_user.last_name
         get_current_user_role = get_current_user.groups.all().values_list('name', flat=True)
         data = [i for i in get_current_user_role]
-        return Response(data={"roles":data}, status=status.HTTP_200_OK)
+        print(full_name)
+        return Response(data={"roles": data, "full_name":full_name}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(data={"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

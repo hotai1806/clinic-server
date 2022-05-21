@@ -73,7 +73,7 @@ def get_current_role(request):
     try:
         get_current_account_id = request.META['current_account_id']
         get_current_user = User.objects.get(id=get_current_account_id)
-        get_current_user_role = get_current_user.groups.all().values_list('id', flat=True)
+        get_current_user_role = get_current_user.groups.all().values_list('name', flat=True)
         data = [i for i in get_current_user_role]
         return Response(data={"roles":data}, status=status.HTTP_200_OK)
     except Exception as e:

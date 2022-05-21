@@ -6,11 +6,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from django.db.models import Q, Sum, Count
 from authentication.models import User
 
 from django.core import serializers
 
-from .models import Appointment, Diagnostician,\
+from clinic.serializers import PaymentSerializer
+
+from .models import Appointment, Diagnostician, Payment,\
     PrescriptionItem, Medicine, Prescription, ScheduleTask
 from clinic.serializers import AppointmentSerializer, DiagnosticianSerializer,\
     PrescriptionItemSerializer, MedicineSerializer, PrescriptionSerializer, ScheduleTaskSerializer
@@ -98,6 +101,11 @@ class MedicineViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['^name']
 
+class PaymentVietSet(viewsets.ModelViewSet):
+    permission_classes = [(permissions.AllowAny)]
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+    http_method_names = ['get', 'patch', 'post']
 
 class PrescriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [(permissions.AllowAny)]
@@ -146,3 +154,30 @@ def get_history_appointment(request, pk):
     except Exception as e:
         print("main", e)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes((permissions.AllowAny, ))
+def static_payment(request):
+    from django.db import connection
+    filter_query = request.GET.get('filter_query')
+
+
+    truncate_month = connection.ops.date_trunc_sql('month', 'created_date')
+    payment = Payment.objects.extra({'month': truncate_month}).values(
+        'created_date__month').annotate(Sum('total_amount')).distinct()
+    return Response(data=payment)
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes((permissions.AllowAny, ))
+def static_patient(request):
+    from django.db import connection
+
+
+    truncate_month = connection.ops.date_trunc_sql('month', 'created_date')
+    patient = Appointment.objects.extra({'month': truncate_month}).values(
+        'created_date__month').annotate(Count('patient_id')).distinct()
+
+    return Response(data=patient)

@@ -115,6 +115,8 @@ class PaymentSerializer(serializers.ModelSerializer):
     '''
     patient_id = serializers.CharField(max_length=255)
     doctor_id = serializers.CharField(max_length=255)
+    prescription_id = serializers.CharField(max_length=255)
+
     total_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     medical_cost = serializers.DecimalField(max_digits=10, decimal_places=2)
     # Field Views
@@ -123,7 +125,7 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = ["id", "patient_id", "patient", "medical_cost",
-                  "doctor_id", "items", "total_amount",]
+                  "doctor_id", "total_amount","prescription_id","created_date"]
         read_only = ['id']
         depth = 2
     # def create(self, validated_data):
